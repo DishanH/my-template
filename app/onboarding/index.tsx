@@ -10,8 +10,8 @@ export default function OnboardingScreen() {
   const [currentPage, setCurrentPage] = React.useState(0);
   
   const handleDone = () => {
-    // Just navigate to home without saving any state
-    router.replace('/');
+    // Navigate to the login page
+    router.replace('/login');
   };
 
   const pages = [

@@ -6,10 +6,12 @@ import React, { useEffect, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider, useTheme } from "./theme/ThemeContext";
+import { AuthProvider, useAuth } from "./utils/authContext";
 
 // Custom drawer content component
 function CustomDrawerContent(props: any) {
   const { colors } = useTheme();
+  const { logout } = useAuth();
 
   // Determine current route name to highlight active drawer item
   const currentRouteName = props.state.routes[props.state.index]?.name || "";
@@ -239,6 +241,12 @@ function CustomDrawerContent(props: any) {
           styles.signOutButton,
           { backgroundColor: colors.drawerActiveItemBackground }
         ]}
+        onPress={() => {
+          props.navigation.closeDrawer();
+          setTimeout(() => {
+            logout();
+          }, 300);
+        }}
       >
         <FontAwesome5
           name="sign-out-alt"
@@ -273,13 +281,17 @@ function CustomDrawerToggle(props: any) {
 // Wrap the root component with ThemeProvider
 function RootLayoutWithTheme({ initialRoute }: { initialRoute: string }) {
   const { colors } = useTheme();
+  const { isAuthenticated } = useAuth();
   
   // Set initial route when component mounts
   useEffect(() => {
     if (initialRoute === '/onboarding') {
       router.replace('/onboarding');
+    } else if (!isAuthenticated && initialRoute !== '/login') {
+      // If not authenticated and not already on login page, redirect to login
+      router.replace('/login');
     }
-  }, [initialRoute]);
+  }, [initialRoute, isAuthenticated]);
 
   return (
     <GestureHandlerRootView
@@ -362,6 +374,15 @@ function RootLayoutWithTheme({ initialRoute }: { initialRoute: string }) {
             headerShown: false,  // Hide header on onboarding screen
           }}
         />
+        
+        <Drawer.Screen
+          name="login"
+          options={{
+            drawerLabel: "Login",
+            drawerItemStyle: { display: 'none' },  // Hide from drawer
+            headerShown: false,  // Hide header on login screen
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
@@ -390,7 +411,9 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <RootLayoutWithTheme initialRoute={initialRoute} />
+      <AuthProvider>
+        <RootLayoutWithTheme initialRoute={initialRoute} />
+      </AuthProvider>
     </ThemeProvider>
   );
 }
