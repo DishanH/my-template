@@ -1,7 +1,8 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { DrawerToggleButton } from "@react-navigation/drawer";
+import { router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { ThemeProvider, useTheme } from "./theme/ThemeContext";
@@ -270,8 +271,15 @@ function CustomDrawerToggle(props: any) {
 }
 
 // Wrap the root component with ThemeProvider
-function RootLayoutWithTheme() {
+function RootLayoutWithTheme({ initialRoute }: { initialRoute: string }) {
   const { colors } = useTheme();
+  
+  // Set initial route when component mounts
+  useEffect(() => {
+    if (initialRoute === '/onboarding') {
+      router.replace('/onboarding');
+    }
+  }, [initialRoute]);
 
   return (
     <GestureHandlerRootView
@@ -346,6 +354,14 @@ function RootLayoutWithTheme() {
             ),
           }}
         />
+        <Drawer.Screen
+          name="onboarding"
+          options={{
+            drawerLabel: "Onboarding",
+            drawerItemStyle: { display: 'none' },  // Hide from drawer
+            headerShown: false,  // Hide header on onboarding screen
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
@@ -353,9 +369,28 @@ function RootLayoutWithTheme() {
 
 // Export the root layout wrapped with ThemeProvider
 export default function RootLayout() {
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState<boolean | null>(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [initialRoute, setInitialRoute] = useState<string | null>(null);
+
+  // Check if we need to show onboarding when component mounts
+  useEffect(() => {
+    // Static onboarding status - always false to show onboarding for testing
+    if (isOnboardingComplete === false && !initialRoute) {
+      setInitialRoute('/onboarding');
+    } else if (!initialRoute) {
+      setInitialRoute('/');
+    }
+  }, [isOnboardingComplete, initialRoute]);
+
+  // Show a loading state while checking onboarding status
+  if (!initialRoute) {
+    return null;
+  }
+
   return (
     <ThemeProvider>
-      <RootLayoutWithTheme />
+      <RootLayoutWithTheme initialRoute={initialRoute} />
     </ThemeProvider>
   );
 }

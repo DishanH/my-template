@@ -3,9 +3,16 @@ import React from 'react';
 import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import ThemeToggle from './components/ThemeToggle';
 import { useTheme } from './theme/ThemeContext';
+// import { resetOnboardingStatus } from './utils/storage';
 
 export default function SettingsScreen() {
   const { colors } = useTheme();
+
+  // const handleViewOnboarding = async () => {
+  //   // Reset onboarding status and navigate to onboarding screen
+  //   await resetOnboardingStatus();
+  //   router.push('/onboarding');
+  // };
 
   return (
     <ScrollView 
@@ -94,6 +101,19 @@ export default function SettingsScreen() {
             <Text style={[styles.optionText, { color: colors.text }]}>Help & Support</Text>
             <FontAwesome5 name="chevron-right" size={14} color={colors.textSecondary} style={styles.chevron} />
           </View>
+          
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          
+          {/* <TouchableOpacity 
+            style={styles.optionItem}
+            onPress={handleViewOnboarding}
+          >
+            <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
+              <FontAwesome5 name="play-circle" size={16} color={colors.primary} />
+            </View>
+            <Text style={[styles.optionText, { color: colors.text }]}>View Onboarding</Text>
+            <FontAwesome5 name="chevron-right" size={14} color={colors.textSecondary} style={styles.chevron} />
+          </TouchableOpacity> */}
         </View>
       </View>
     </ScrollView>
