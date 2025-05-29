@@ -1,13 +1,30 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Dimensions, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 
+// Define custom colors for onboarding screen
+const ONBOARDING_COLORS = {
+  primary: '#52616B',
+  secondary: '#1E2022',
+  background: '#FFFFFF',
+  surface: '#F0F5F9',
+  accent: '#C9D6DF',
+  text: '#1E2022',
+  textSecondary: '#52616B',
+  border: '#C9D6DF',
+};
+
 // Simple onboarding screen without storage dependencies
 export default function OnboardingScreen() {
-  const { colors } = useTheme();
+  const { colors: themeColors, setTheme } = useTheme();
   const [currentPage, setCurrentPage] = React.useState(0);
+  
+  // Force light theme for onboarding screen
+  useEffect(() => {
+    setTheme('light');
+  }, []);
   
   const handleDone = () => {
     // Navigate to the login page
@@ -47,34 +64,34 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <StatusBar barStyle="dark-content" backgroundColor={colors.surfaceVariant} />
+    <View style={[styles.container, { backgroundColor: ONBOARDING_COLORS.background }]}>
+      <StatusBar barStyle="dark-content" backgroundColor={ONBOARDING_COLORS.background} />
       
       {/* Content area with image and text */}
       <View style={styles.contentWrapper}>
         {/* Image container with border */}
         <View style={styles.imageWrapper}>
           <View style={[styles.imageContainer, { 
-            backgroundColor: colors.surfaceVariant,
-            borderColor: colors.border
+            backgroundColor: ONBOARDING_COLORS.surface,
+            borderColor: ONBOARDING_COLORS.border
           }]}>
             <FontAwesome5 
               name={pages[currentPage].icon} 
               size={80} 
-              color={colors.textSecondary} 
+              color={ONBOARDING_COLORS.primary} 
             />
           </View>
         </View>
         
         <View style={styles.contentContainer}>
           <View style={styles.titleContainer}>
-            <Text style={[styles.title, { color: colors.text }]}>
+            <Text style={[styles.title, { color: ONBOARDING_COLORS.text }]}>
               {pages[currentPage].title}
             </Text>
           </View>
           
           <View style={styles.subtitleContainer}>
-            <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
+            <Text style={[styles.subtitle, { color: ONBOARDING_COLORS.textSecondary }]}>
               {pages[currentPage].subtitle}
             </Text>
           </View>
@@ -85,7 +102,7 @@ export default function OnboardingScreen() {
                 key={index}
                 style={[
                   styles.dot, 
-                  { backgroundColor: index === currentPage ? colors.textSecondary : colors.border }
+                  { backgroundColor: index === currentPage ? ONBOARDING_COLORS.primary : ONBOARDING_COLORS.border }
                 ]}
               />
             ))}
@@ -101,14 +118,14 @@ export default function OnboardingScreen() {
               style={[styles.skipButton]} 
               onPress={handleDone}
             >
-              <Text style={[styles.skipText, { color: colors.textSecondary }]}>Skip</Text>
+              <Text style={[styles.skipText, { color: ONBOARDING_COLORS.primary }]}>Skip</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity 
-              style={[styles.button, { borderColor: colors.border }]} 
+              style={[styles.button, { borderColor: ONBOARDING_COLORS.border }]} 
               onPress={prevPage}
             >
-              <Text style={[styles.buttonText, { color: colors.textSecondary }]}>Back</Text>
+              <Text style={[styles.buttonText, { color: ONBOARDING_COLORS.primary }]}>Back</Text>
             </TouchableOpacity>
           )}
           
@@ -116,13 +133,13 @@ export default function OnboardingScreen() {
             style={[
               styles.button, 
               { 
-                backgroundColor: colors.textSecondary,
+                backgroundColor: ONBOARDING_COLORS.primary,
                 paddingHorizontal: currentPage === pages.length - 1 ? 35 : 30
               }
             ]} 
             onPress={currentPage === pages.length - 1 ? handleDone : nextPage}
           >
-            <Text style={[styles.buttonText, { color: colors.background }]}>
+            <Text style={[styles.buttonText, { color: '#FFFFFF' }]}>
               {currentPage === pages.length - 1 ? 'Get Started' : 'Next'}
             </Text>
           </TouchableOpacity>

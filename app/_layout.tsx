@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
 import React, { useEffect, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetProvider } from "./components/BottomSheetProvider";
 import { ThemeProvider, useTheme } from "./theme/ThemeContext";
 import { AuthProvider, useAuth } from "./utils/authContext";
 
@@ -294,97 +294,93 @@ function RootLayoutWithTheme({ initialRoute }: { initialRoute: string }) {
   }, [initialRoute, isAuthenticated]);
 
   return (
-    <GestureHandlerRootView
-      style={{ flex: 1, backgroundColor: colors.background }}
+    <Drawer
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={({ route }) => ({
+        headerShown: true,
+        headerTitle: route.name !== 'index' && route.name !== 'tabs' ? route.name.charAt(0).toUpperCase() + route.name.slice(1) : "",
+        headerTitleAlign: 'center',
+        headerTitleStyle: {
+          fontWeight: '600',
+          fontSize: 18,
+          color: colors.text,
+        },
+        headerStyle: {
+          backgroundColor: colors.headerBackground,
+          elevation: 0, // Remove shadow on Android
+          shadowOpacity: 0, // Remove shadow on iOS
+          borderBottomWidth: 0,
+          height: Platform.OS === 'ios' ? 80 : 60,
+        },
+        headerShadowVisible: false,
+        drawerType: "slide",
+        drawerStyle: {
+          width: "75%",
+          backgroundColor: colors.drawerBackground,
+        },
+        swipeEdgeWidth: 50,
+        headerLeft: (props) => <CustomDrawerToggle {...props} />,
+      })}
     >
-      <Drawer
-        drawerContent={(props) => <CustomDrawerContent {...props} />}
-        screenOptions={({ route }) => ({
-          headerShown: true,
-          headerTitle: route.name !== 'index' && route.name !== 'tabs' ? route.name.charAt(0).toUpperCase() + route.name.slice(1) : "",
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontWeight: '600',
-            fontSize: 18,
-            color: colors.text,
-          },
-          headerStyle: {
-            backgroundColor: colors.headerBackground,
-            elevation: 0, // Remove shadow on Android
-            shadowOpacity: 0, // Remove shadow on iOS
-            borderBottomWidth: 0,
-            height: Platform.OS === 'ios' ? 80 : 60,
-          },
-          headerShadowVisible: false,
-          drawerType: "slide",
-          drawerStyle: {
-            width: "75%",
-            backgroundColor: colors.drawerBackground,
-          },
-          swipeEdgeWidth: 50,
-          headerLeft: (props) => <CustomDrawerToggle {...props} />,
-        })}
-      >
-        <Drawer.Screen
-          name="index"
-          options={{
-            drawerLabel: "Home",
-            headerShown: false,
-          }}
-        />
-        <Drawer.Screen
-          name="tabs"
-          options={{
-            drawerLabel: "Dashboard",
-            headerShown: false,
-          }}
-        />
-        <Drawer.Screen
-          name="groups"
-          options={{
-            drawerLabel: "Groups",
-            drawerIcon: ({ color }) => (
-              <FontAwesome5 name="users" size={20} color={color} />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="activity"
-          options={{
-            drawerLabel: "Activity",
-            drawerIcon: ({ color }) => (
-              <FontAwesome5 name="history" size={20} color={color} />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="settings"
-          options={{
-            drawerLabel: "Settings",
-            drawerIcon: ({ color }) => (
-              <FontAwesome5 name="cog" size={20} color={color} />
-            ),
-          }}
-        />
-        <Drawer.Screen
-          name="onboarding"
-          options={{
-            drawerLabel: "Onboarding",
-            drawerItemStyle: { display: 'none' },  // Hide from drawer
-            headerShown: false,  // Hide header on onboarding screen
-          }}
-        />
-        
-        <Drawer.Screen
-          name="login"
-          options={{
-            drawerLabel: "Login",
-            drawerItemStyle: { display: 'none' },  // Hide from drawer
-            headerShown: false,  // Hide header on login screen
-          }}
-        />
-      </Drawer>
-    </GestureHandlerRootView>
+      <Drawer.Screen
+        name="index"
+        options={{
+          drawerLabel: "Home",
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="tabs"
+        options={{
+          drawerLabel: "Dashboard",
+          headerShown: false,
+        }}
+      />
+      <Drawer.Screen
+        name="groups"
+        options={{
+          drawerLabel: "Groups",
+          drawerIcon: ({ color }) => (
+            <FontAwesome5 name="users" size={20} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="activity"
+        options={{
+          drawerLabel: "Activity",
+          drawerIcon: ({ color }) => (
+            <FontAwesome5 name="history" size={20} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="settings"
+        options={{
+          drawerLabel: "Settings",
+          drawerIcon: ({ color }) => (
+            <FontAwesome5 name="cog" size={20} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen
+        name="onboarding"
+        options={{
+          drawerLabel: "Onboarding",
+          drawerItemStyle: { display: 'none' },  // Hide from drawer
+          headerShown: false,  // Hide header on onboarding screen
+        }}
+      />
+      
+      <Drawer.Screen
+        name="login"
+        options={{
+          drawerLabel: "Login",
+          drawerItemStyle: { display: 'none' },  // Hide from drawer
+          headerShown: false,  // Hide header on login screen
+        }}
+      />
+    </Drawer>
   );
 }
 
@@ -412,7 +408,9 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <RootLayoutWithTheme initialRoute={initialRoute} />
+        <BottomSheetProvider>
+          <RootLayoutWithTheme initialRoute={initialRoute} />
+        </BottomSheetProvider>
       </AuthProvider>
     </ThemeProvider>
   );

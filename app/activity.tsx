@@ -1,9 +1,16 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { useBottomSheet } from './components/BottomSheetProvider';
+import SampleBottomSheetContent from './components/SampleBottomSheetContent';
 import { useTheme } from './theme/ThemeContext';
 
 export default function ActivityScreen() {
   const { colors } = useTheme();
+  const { openBottomSheet } = useBottomSheet();
+
+  const handleOpenBottomSheet = () => {
+    openBottomSheet(<SampleBottomSheetContent />, '30%');
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
@@ -11,6 +18,11 @@ export default function ActivityScreen() {
         <Text style={[styles.placeholder, { color: colors.textSecondary }]}>
           Activity Page Template
         </Text>
+        
+        <Button 
+          title="Open Bottom Sheet" 
+          onPress={handleOpenBottomSheet}
+        />
       </View>
     </View>
   );
@@ -25,6 +37,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    gap: 20,
   },
   placeholder: {
     fontSize: 18,

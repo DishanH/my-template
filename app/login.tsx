@@ -1,31 +1,53 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import * as WebBrowser from 'expo-web-browser';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
     Dimensions,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    StatusBar,
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
     View
 } from 'react-native';
+import colors from './theme/colors';
 import { useTheme } from './theme/ThemeContext';
 import { useAuth } from './utils/authContext';
 
 // Ensure authentication redirect is handled properly
 WebBrowser.maybeCompleteAuthSession();
 
+// Define custom colors for login screen
+const LOGIN_COLORS = {
+  primary: '#52616B',
+  secondary: '#1E2022',
+  background: '#FFFFFF',
+  surface: '#F0F5F9',
+  accent: '#C9D6DF',
+  text: '#1E2022',
+  textSecondary: '#52616B',
+  border: '#C9D6DF',
+};
+
 export default function LoginScreen() {
-  const { colors } = useTheme();
+  const { colors: themeColors, setTheme } = useTheme();
   const { login, loginWithGoogle, loginWithApple, register, isLoading } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  
+  // Force light theme for login screen
+  useEffect(() => {
+    setTheme('light');
+  }, []);
+  
+  // Use light theme colors directly
+  const lightColors = colors.light;
 
   // Handle Email/Password Sign In or Sign Up
   const handleEmailAuth = () => {
@@ -37,166 +59,175 @@ export default function LoginScreen() {
   };
 
   return (
-    <ScrollView 
-      style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={styles.contentContainer}
-      keyboardShouldPersistTaps="handled"
-    >
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardAvoidContainer}
+    <View style={{ flex: 1, backgroundColor: LOGIN_COLORS.background }}>
+      <StatusBar barStyle="dark-content" backgroundColor={LOGIN_COLORS.background} />
+      <ScrollView 
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+        keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.headerContainer}>
-          <View style={styles.logoContainer}>
-            <FontAwesome5 name="rocket" size={40} color={colors.primary} />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.keyboardAvoidContainer}
+        >
+          <View style={styles.headerContainer}>
+            <View style={[styles.logoContainer, { backgroundColor: 'rgba(82, 97, 107, 0.1)' }]}>
+              <FontAwesome5 name="rocket" size={40} color={LOGIN_COLORS.primary} />
+            </View>
+            <Text style={[styles.title, { color: LOGIN_COLORS.text }]}>
+              {isSignUp ? 'Create Account' : 'Welcome Back'}
+            </Text>
+            <Text style={[styles.subtitle, { color: LOGIN_COLORS.textSecondary }]}>
+              {isSignUp 
+                ? 'Sign up to get started with all our features' 
+                : 'Log in to continue your journey'}
+            </Text>
           </View>
-          <Text style={[styles.title, { color: colors.text }]}>
-            {isSignUp ? 'Create Account' : 'Welcome Back'}
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.textSecondary }]}>
-            {isSignUp 
-              ? 'Sign up to get started with all our features' 
-              : 'Log in to continue your journey'}
-          </Text>
-        </View>
 
-        <View style={styles.formContainer}>
-          {isSignUp && (
+          <View style={styles.formContainer}>
+            {isSignUp && (
+              <View style={styles.inputGroup}>
+                <Text style={[styles.inputLabel, { color: LOGIN_COLORS.textSecondary }]}>Full Name</Text>
+                <TextInput
+                  style={[
+                    styles.input, 
+                    { 
+                      backgroundColor: LOGIN_COLORS.surface,
+                      borderColor: LOGIN_COLORS.border,
+                      color: LOGIN_COLORS.text
+                    }
+                  ]}
+                  placeholder="Enter your full name"
+                  placeholderTextColor={LOGIN_COLORS.accent}
+                  value={name}
+                  onChangeText={setName}
+                />
+              </View>
+            )}
+
             <View style={styles.inputGroup}>
-              <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Full Name</Text>
+              <Text style={[styles.inputLabel, { color: LOGIN_COLORS.textSecondary }]}>Email</Text>
               <TextInput
                 style={[
                   styles.input, 
                   { 
-                    backgroundColor: colors.surfaceVariant,
-                    borderColor: colors.border,
-                    color: colors.text
+                    backgroundColor: LOGIN_COLORS.surface,
+                    borderColor: LOGIN_COLORS.border,
+                    color: LOGIN_COLORS.text
                   }
                 ]}
-                placeholder="Enter your full name"
-                placeholderTextColor={colors.textSecondary}
-                value={name}
-                onChangeText={setName}
+                placeholder="Enter your email"
+                placeholderTextColor={LOGIN_COLORS.accent}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={email}
+                onChangeText={setEmail}
               />
             </View>
-          )}
 
-          <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Email</Text>
-            <TextInput
+            <View style={styles.inputGroup}>
+              <Text style={[styles.inputLabel, { color: LOGIN_COLORS.textSecondary }]}>Password</Text>
+              <TextInput
+                style={[
+                  styles.input, 
+                  { 
+                    backgroundColor: LOGIN_COLORS.surface,
+                    borderColor: LOGIN_COLORS.border,
+                    color: LOGIN_COLORS.text
+                  }
+                ]}
+                placeholder="Enter your password"
+                placeholderTextColor={LOGIN_COLORS.accent}
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+            </View>
+
+            {!isSignUp && (
+              <TouchableOpacity style={styles.forgotPasswordContainer}>
+                <Text style={[styles.forgotPasswordText, { color: LOGIN_COLORS.primary }]}>
+                  Forgot Password?
+                </Text>
+              </TouchableOpacity>
+            )}
+
+            <TouchableOpacity
               style={[
-                styles.input, 
-                { 
-                  backgroundColor: colors.surfaceVariant,
-                  borderColor: colors.border,
-                  color: colors.text
-                }
+                styles.primaryButton,
+                { backgroundColor: LOGIN_COLORS.primary },
+                (!email || !password || (isSignUp && !name)) && styles.disabledButton
               ]}
-              placeholder="Enter your email"
-              placeholderTextColor={colors.textSecondary}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              value={email}
-              onChangeText={setEmail}
-            />
+              onPress={handleEmailAuth}
+              disabled={!email || !password || (isSignUp && !name) || isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff" size="small" />
+              ) : (
+                <Text style={styles.primaryButtonText}>
+                  {isSignUp ? 'Sign Up' : 'Log In'}
+                </Text>
+              )}
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={[styles.inputLabel, { color: colors.textSecondary }]}>Password</Text>
-            <TextInput
-              style={[
-                styles.input, 
-                { 
-                  backgroundColor: colors.surfaceVariant,
-                  borderColor: colors.border,
-                  color: colors.text
-                }
-              ]}
-              placeholder="Enter your password"
-              placeholderTextColor={colors.textSecondary}
-              secureTextEntry
-              value={password}
-              onChangeText={setPassword}
-            />
+          <View style={styles.separatorContainer}>
+            <View style={[styles.separator, { backgroundColor: LOGIN_COLORS.border }]} />
+            <Text style={[styles.separatorText, { color: LOGIN_COLORS.textSecondary }]}>
+              OR CONTINUE WITH
+            </Text>
+            <View style={[styles.separator, { backgroundColor: LOGIN_COLORS.border }]} />
           </View>
 
-          {!isSignUp && (
-            <TouchableOpacity style={styles.forgotPasswordContainer}>
-              <Text style={[styles.forgotPasswordText, { color: colors.primary }]}>
-                Forgot Password?
+          <View style={styles.socialButtonsContainer}>
+            <TouchableOpacity
+              style={[
+                styles.socialButton,
+                { 
+                  borderColor: LOGIN_COLORS.border, 
+                  backgroundColor: LOGIN_COLORS.surface 
+                }
+              ]}
+              onPress={loginWithGoogle}
+              disabled={isLoading}
+            >
+              <FontAwesome5 name="google" size={20} color="#DB4437" />
+              <Text style={[styles.socialButtonText, { color: LOGIN_COLORS.text }]}>
+                Google
               </Text>
             </TouchableOpacity>
-          )}
 
-          <TouchableOpacity
-            style={[
-              styles.primaryButton,
-              { backgroundColor: colors.primary },
-              (!email || !password || (isSignUp && !name)) && styles.disabledButton
-            ]}
-            onPress={handleEmailAuth}
-            disabled={!email || !password || (isSignUp && !name) || isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#ffffff" size="small" />
-            ) : (
-              <Text style={styles.primaryButtonText}>
-                {isSignUp ? 'Sign Up' : 'Log In'}
+            <TouchableOpacity
+              style={[
+                styles.socialButton,
+                { 
+                  borderColor: LOGIN_COLORS.border, 
+                  backgroundColor: LOGIN_COLORS.surface 
+                }
+              ]}
+              onPress={loginWithApple}
+              disabled={isLoading}
+            >
+              <FontAwesome5 name="apple" size={20} color="#000000" />
+              <Text style={[styles.socialButtonText, { color: LOGIN_COLORS.text }]}>
+                Apple
               </Text>
-            )}
-          </TouchableOpacity>
-        </View>
+            </TouchableOpacity>
+          </View>
 
-        <View style={styles.separatorContainer}>
-          <View style={[styles.separator, { backgroundColor: colors.border }]} />
-          <Text style={[styles.separatorText, { color: colors.textSecondary }]}>
-            OR CONTINUE WITH
-          </Text>
-          <View style={[styles.separator, { backgroundColor: colors.border }]} />
-        </View>
-
-        <View style={styles.socialButtonsContainer}>
-          <TouchableOpacity
-            style={[
-              styles.socialButton,
-              { borderColor: colors.border, backgroundColor: colors.surfaceVariant }
-            ]}
-            onPress={loginWithGoogle}
-            disabled={isLoading}
-          >
-            <FontAwesome5 name="google" size={20} color="#DB4437" />
-            <Text style={[styles.socialButtonText, { color: colors.text }]}>
-              Google
+          <View style={styles.switchContainer}>
+            <Text style={[styles.switchText, { color: LOGIN_COLORS.textSecondary }]}>
+              {isSignUp ? 'Already have an account?' : "Don't have an account?"}
             </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.socialButton,
-              { borderColor: colors.border, backgroundColor: colors.surfaceVariant }
-            ]}
-            onPress={loginWithApple}
-            disabled={isLoading}
-          >
-            <FontAwesome5 name="apple" size={20} color={colors.text} />
-            <Text style={[styles.socialButtonText, { color: colors.text }]}>
-              Apple
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.switchContainer}>
-          <Text style={[styles.switchText, { color: colors.textSecondary }]}>
-            {isSignUp ? 'Already have an account?' : "Don't have an account?"}
-          </Text>
-          <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
-            <Text style={[styles.switchActionText, { color: colors.primary }]}>
-              {isSignUp ? 'Log In' : 'Sign Up'}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </KeyboardAvoidingView>
-    </ScrollView>
+            <TouchableOpacity onPress={() => setIsSignUp(!isSignUp)}>
+              <Text style={[styles.switchActionText, { color: LOGIN_COLORS.primary }]}>
+                {isSignUp ? 'Log In' : 'Sign Up'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </KeyboardAvoidingView>
+      </ScrollView>
+    </View>
   );
 }
 
