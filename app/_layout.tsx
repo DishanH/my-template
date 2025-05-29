@@ -282,17 +282,23 @@ function CustomDrawerToggle(props: any) {
 // Wrap the root component with ThemeProvider
 function RootLayoutWithTheme({ initialRoute }: { initialRoute: string }) {
   const { colors } = useTheme();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   
   // Set initial route when component mounts
   useEffect(() => {
+    // Don't redirect if auth is still loading
+    if (authLoading) return;
+    
     if (initialRoute === '/onboarding') {
       router.replace('/onboarding' as any);
-    } else if (!isAuthenticated && initialRoute !== '/login') {
-      // If not authenticated and not already on login page, redirect to login
+    } else if (!isAuthenticated) {
+      // Only redirect to login if not authenticated
       router.replace('/login' as any);
+    } else if (isAuthenticated && initialRoute === '/') {
+      // If authenticated and initial route is root, go to tabs
+      router.replace('/tabs' as any);
     }
-  }, [initialRoute, isAuthenticated]);
+  }, [initialRoute, isAuthenticated, authLoading]);
 
   return (
     <Drawer

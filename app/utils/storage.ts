@@ -5,6 +5,7 @@ const STORAGE_KEYS = {
   IS_AUTHENTICATED: 'isAuthenticated',
   ONBOARDING_COMPLETE: 'onboardingComplete',
   USER_DATA: 'userData',
+  THEME: 'theme',
 } as const;
 
 // Storage utility functions
@@ -49,6 +50,26 @@ export const storage = {
     }
   },
 
+  // Get theme preference
+  async getTheme(): Promise<'light' | 'dark' | null> {
+    try {
+      const value = await AsyncStorage.getItem(STORAGE_KEYS.THEME);
+      return value as 'light' | 'dark' | null;
+    } catch (error) {
+      console.error('Error getting theme:', error);
+      return null;
+    }
+  },
+
+  // Set theme preference
+  async setTheme(theme: 'light' | 'dark'): Promise<void> {
+    try {
+      await AsyncStorage.setItem(STORAGE_KEYS.THEME, theme);
+    } catch (error) {
+      console.error('Error setting theme:', error);
+    }
+  },
+
   // Get user data
   async getUserData(): Promise<any> {
     try {
@@ -76,6 +97,7 @@ export const storage = {
         STORAGE_KEYS.IS_AUTHENTICATED,
         STORAGE_KEYS.ONBOARDING_COMPLETE,
         STORAGE_KEYS.USER_DATA,
+        STORAGE_KEYS.THEME,
       ]);
     } catch (error) {
       console.error('Error clearing storage:', error);

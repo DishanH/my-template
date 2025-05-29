@@ -1,18 +1,17 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ThemeToggle from './components/ThemeToggle';
 import { useTheme } from './theme/ThemeContext';
-// import { resetOnboardingStatus } from './utils/storage';
+import { useAuth } from './utils/authContext';
 
 export default function SettingsScreen() {
   const { colors } = useTheme();
+  const { logout } = useAuth();
 
-  // const handleViewOnboarding = async () => {
-  //   // Reset onboarding status and navigate to onboarding screen
-  //   await resetOnboardingStatus();
-  //   router.push('/onboarding');
-  // };
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <ScrollView 
@@ -73,6 +72,19 @@ export default function SettingsScreen() {
             <Text style={[styles.optionText, { color: colors.text }]}>Privacy & Security</Text>
             <FontAwesome5 name="chevron-right" size={14} color={colors.textSecondary} style={styles.chevron} />
           </View>
+          
+          <View style={[styles.divider, { backgroundColor: colors.border }]} />
+          
+          <TouchableOpacity 
+            style={styles.optionItem}
+            onPress={handleLogout}
+          >
+            <View style={[styles.iconContainer, { backgroundColor: colors.error + '20' }]}>
+              <FontAwesome5 name="sign-out-alt" size={16} color={colors.error} />
+            </View>
+            <Text style={[styles.optionText, { color: colors.error }]}>Logout</Text>
+            <FontAwesome5 name="chevron-right" size={14} color={colors.textSecondary} style={styles.chevron} />
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -95,25 +107,12 @@ export default function SettingsScreen() {
           <View style={[styles.divider, { backgroundColor: colors.border }]} />
           
           <View style={styles.optionItem}>
-            <View style={[styles.iconContainer, { backgroundColor: colors.error + '20' }]}>
-              <FontAwesome5 name="question-circle" size={16} color={colors.error} />
+            <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
+              <FontAwesome5 name="question-circle" size={16} color={colors.primary} />
             </View>
             <Text style={[styles.optionText, { color: colors.text }]}>Help & Support</Text>
             <FontAwesome5 name="chevron-right" size={14} color={colors.textSecondary} style={styles.chevron} />
           </View>
-          
-          <View style={[styles.divider, { backgroundColor: colors.border }]} />
-          
-          {/* <TouchableOpacity 
-            style={styles.optionItem}
-            onPress={handleViewOnboarding}
-          >
-            <View style={[styles.iconContainer, { backgroundColor: colors.primary + '20' }]}>
-              <FontAwesome5 name="play-circle" size={16} color={colors.primary} />
-            </View>
-            <Text style={[styles.optionText, { color: colors.text }]}>View Onboarding</Text>
-            <FontAwesome5 name="chevron-right" size={14} color={colors.textSecondary} style={styles.chevron} />
-          </TouchableOpacity> */}
         </View>
       </View>
     </ScrollView>
