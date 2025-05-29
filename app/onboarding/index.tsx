@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Dimensions, Platform, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
+import { storage } from '../utils/storage';
 
 // Define custom colors for onboarding screen
 const ONBOARDING_COLORS = {
@@ -26,9 +27,17 @@ export default function OnboardingScreen() {
     setTheme('light');
   }, []);
   
-  const handleDone = () => {
-    // Navigate to the login page
-    router.replace('/login');
+  const handleDone = async () => {
+    try {
+      // Mark onboarding as complete in storage
+      await storage.setOnboardingStatus(true);
+      // Navigate to the login page
+      router.replace('/login' as any);
+    } catch (error) {
+      console.error('Error saving onboarding status:', error);
+      // Still navigate even if storage fails
+      router.replace('/login' as any);
+    }
   };
 
   const pages = [

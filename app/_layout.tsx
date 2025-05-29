@@ -7,6 +7,7 @@ import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View }
 import { BottomSheetProvider } from "./components/BottomSheetProvider";
 import { ThemeProvider, useTheme } from "./theme/ThemeContext";
 import { AuthProvider, useAuth } from "./utils/authContext";
+import { storage } from "./utils/storage";
 
 // Custom drawer content component
 function CustomDrawerContent(props: any) {
@@ -286,10 +287,10 @@ function RootLayoutWithTheme({ initialRoute }: { initialRoute: string }) {
   // Set initial route when component mounts
   useEffect(() => {
     if (initialRoute === '/onboarding') {
-      router.replace('/onboarding');
+      router.replace('/onboarding' as any);
     } else if (!isAuthenticated && initialRoute !== '/login') {
       // If not authenticated and not already on login page, redirect to login
-      router.replace('/login');
+      router.replace('/login' as any);
     }
   }, [initialRoute, isAuthenticated]);
 
@@ -386,22 +387,36 @@ function RootLayoutWithTheme({ initialRoute }: { initialRoute: string }) {
 
 // Export the root layout wrapped with ThemeProvider
 export default function RootLayout() {
-  const [isOnboardingComplete, setIsOnboardingComplete] = useState<boolean | null>(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
 
-  // Check if we need to show onboarding when component mounts
+  // Check onboarding status from storage when component mounts
   useEffect(() => {
-    // Static onboarding status - always false to show onboarding for testing
-    if (isOnboardingComplete === false && !initialRoute) {
-      setInitialRoute('/onboarding');
-    } else if (!initialRoute) {
-      setInitialRoute('/');
-    }
-  }, [isOnboardingComplete, initialRoute]);
+    const checkOnboardingStatus = async () => {
+      try {
+        const onboardingStatus = await storage.getOnboardingStatus();
+        setIsOnboardingComplete(onboardingStatus);
+        
+        if (!onboardingStatus) {
+          setInitialRoute('/onboarding');
+        } else {
+          setInitialRoute('/');
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error);
+        setIsOnboardingComplete(false);
+        setInitialRoute('/onboarding');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkOnboardingStatus();
+  }, []);
 
   // Show a loading state while checking onboarding status
-  if (!initialRoute) {
+  if (isLoading || !initialRoute) {
     return null;
   }
 
