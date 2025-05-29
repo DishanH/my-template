@@ -1,22 +1,25 @@
 {
   "expo": {
-    "name": "my-template",
-    "slug": "my-template",
+    "name": "React Native Template",
+    "slug": "react-native-template",
     "version": "1.0.0",
+    "description": "A production-ready React Native template with authentication, theming, navigation, and persistent storage",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mytemplate",
+    "scheme": "reactnativetemplate",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.template.reactnative"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.template.reactnative"
     },
     "web": {
       "bundler": "metro",

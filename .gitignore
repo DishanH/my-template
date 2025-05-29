@@ -95,3 +95,5 @@ temp/
 # Expo
 .expo/*
 .expo-shared/*
+
+# Note: screenshots/ folder should be included to showcase the template

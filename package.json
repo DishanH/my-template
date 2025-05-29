@@ -1,7 +1,9 @@
 {
-  "name": "my-template",
+  "name": "react-native-template",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "type": "module",
+  "description": "A production-ready React Native template with authentication, theming, navigation, and persistent storage",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -53,5 +55,19 @@
     "eslint-config-expo": "~9.2.0",
     "typescript": "~5.8.3"
   },
-  "private": true
+  "private": true,
+  "keywords": [
+    "react-native",
+    "expo",
+    "template",
+    "authentication",
+    "navigation",
+    "typescript",
+    "theme"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/react-native-template.git"
+  },
+  "license": "MIT"
 }

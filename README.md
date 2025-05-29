@@ -15,7 +15,25 @@ A production-ready React Native template with authentication, theming, navigatio
 
 ## 📱 Screenshots
 
-<!-- Add your screenshots here -->
+<div align="center">
+
+### 🌙 Dark Theme
+<img src="./screenshots/dark-theme.png" alt="Dark Theme Dashboard" width="300">
+
+### ☀️ Light Theme  
+<img src="./screenshots/light-theme.png" alt="Light Theme Dashboard" width="300">
+
+</div>
+
+### ✨ What You See:
+- **🎨 Adaptive Theming** - Seamless dark/light mode switching
+- **🧭 Clean Navigation** - Drawer menu with intuitive icons
+- **📊 Dashboard Layout** - Minimal, professional design
+- **🚀 Welcome Card** - Engaging user onboarding
+- **📱 Tab Navigation** - Bottom tabs for easy access
+- **🎯 Template Ready** - Perfect starting point for any app
+
+*The template automatically adapts to your device's theme preference and remembers your choice using AsyncStorage.*
 
 ## 🛠 Quick Start
 
@@ -31,10 +49,10 @@ A production-ready React Native template with authentication, theming, navigatio
 1. **Use this template:**
    ```bash
    # If this is a GitHub template
-   npx create-expo-app MyApp --template https://github.com/yourusername/react-native-template
+   npx create-expo-app MyApp --template https://github.com/DishanH/react-native-template
    
    # Or clone directly
-   git clone https://github.com/yourusername/react-native-template.git MyApp
+   git clone https://github.com/DishanH/react-native-template.git MyApp
    cd MyApp
    ```
 
