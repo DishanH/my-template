@@ -164,6 +164,42 @@ npm run ios        # Run on iOS
 npm run web        # Run on web
 ```
 
+## 🛠 Troubleshooting
+
+### Metro Error: "module is not defined"
+
+If you encounter this error when starting the project:
+
+```bash
+Metro error: node_modules\expo-router\node\render.js: module is not defined
+```
+
+**Solution:**
+1. Make sure `package.json` does NOT have `"type": "module"`
+2. Clear Metro cache: `npx expo start --clear`
+3. Reinstall dependencies: `rm -rf node_modules && npm install`
+
+### Common Issues:
+
+**Node Modules Issues:**
+```bash
+# Clear everything and reinstall
+rm -rf node_modules package-lock.json
+npm install
+```
+
+**Metro Cache Issues:**
+```bash
+# Clear Metro cache
+npx expo start --clear
+```
+
+**TypeScript Errors:**
+```bash
+# Check TypeScript configuration
+npx tsc --noEmit
+```
+
 ## 📝 Usage Tips
 
 ### Adding New Screens
