@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
+import { useTheme } from '../context/ThemeContext';
 import { useBottomSheet } from './components/BottomSheetProvider';
 import SampleBottomSheetContent from './components/SampleBottomSheetContent';
-import { useTheme } from './theme/ThemeContext';
 
 export default function GroupsScreen() {
   const { colors } = useTheme();

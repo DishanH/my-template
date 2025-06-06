@@ -9,6 +9,7 @@ export interface ThemeColors {
   // Text colors
   text: string;
   textSecondary: string;
+  textPrimary: string;
   
   // UI element colors
   primary: string;
@@ -28,6 +29,10 @@ export interface ThemeColors {
   icon: string;
   statusActive: string;
   statusInactive: string;
+  
+  // Message bubble colors (for SettingsScreen compatibility)
+  bubbleSent: string;
+  bubbleReceived: string;
   
   // Drawer specific
   drawerBackground: string;

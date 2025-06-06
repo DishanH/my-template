@@ -3,9 +3,9 @@ import { DrawerToggleButton } from "@react-navigation/drawer";
 import { Tabs } from "expo-router";
 import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
+import { useTheme } from "../../context/ThemeContext";
 import ScrollContextProvider from "../components/ScrollContextProvider";
 import TabBar from "../components/TabBar";
-import { useTheme } from "../theme/ThemeContext";
 
 // Custom Drawer Toggle Button with circular background
 function CustomDrawerToggle(props: any) {

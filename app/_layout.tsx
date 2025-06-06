@@ -1,18 +1,56 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { DrawerToggleButton } from "@react-navigation/drawer";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { router } from "expo-router";
 import { Drawer } from "expo-router/drawer";
+import { StatusBar } from "expo-status-bar";
 import React, { useEffect, useState } from "react";
 import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { AuthProvider, useAuth } from "../context/AuthContext";
+import { SettingsProvider, useSettings } from "../context/SettingsContext";
+import { ThemeProvider } from "../context/ThemeContext";
+import SignInScreen from "./auth/signin";
+import SignUpScreen from "./auth/signup";
 import { BottomSheetProvider } from "./components/BottomSheetProvider";
-import { ThemeProvider, useTheme } from "./theme/ThemeContext";
-import { AuthProvider, useAuth } from "./utils/authContext";
 import { storage } from "./utils/storage";
+
+// Create stack navigator for auth flow
+const Stack = createNativeStackNavigator();
+
+// Authentication navigator
+const AuthNavigator = () => {
+  const { colors } = useSettings();
+  
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.background,
+        },
+        headerTintColor: colors.accent,
+        contentStyle: {
+          backgroundColor: colors.background,
+        },
+      }}
+    >
+      <Stack.Screen 
+        name="SignIn" 
+        component={SignInScreen} 
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen 
+        name="SignUp" 
+        component={SignUpScreen} 
+        options={{ headerShown: false }}
+      />
+    </Stack.Navigator>
+  );
+};
 
 // Custom drawer content component
 function CustomDrawerContent(props: any) {
-  const { colors } = useTheme();
-  const { logout } = useAuth();
+  const { colors } = useSettings();
+  const { signOut } = useAuth();
 
   // Determine current route name to highlight active drawer item
   const currentRouteName = props.state.routes[props.state.index]?.name || "";
@@ -21,7 +59,7 @@ function CustomDrawerContent(props: any) {
     <View
       style={[
         styles.drawerContainer,
-        { backgroundColor: colors.drawerBackground },
+        { backgroundColor: colors.background },
       ]}
     >
       {/* User Profile Section with background box */}
@@ -29,8 +67,8 @@ function CustomDrawerContent(props: any) {
         style={[
           styles.profileBox,
           {
-            backgroundColor: colors.drawerActiveItemBackground,
-            borderColor: colors.divider,
+            backgroundColor: colors.bubbleReceived,
+            borderColor: colors.textSecondary + '20',
           },
         ]}
       >
@@ -40,7 +78,7 @@ function CustomDrawerContent(props: any) {
             style={styles.avatar}
             resizeMode="cover"
           />
-          <Text style={[styles.userName, { color: colors.text }]}>John Doe</Text>
+          <Text style={[styles.userName, { color: colors.textPrimary }]}>John Doe</Text>
           <Text style={[styles.userEmail, { color: colors.textSecondary }]}>
             john.doe@example.com
           </Text>
@@ -55,7 +93,7 @@ function CustomDrawerContent(props: any) {
             {
               backgroundColor:
                 currentRouteName === "tabs" || currentRouteName === "index"
-                  ? colors.drawerActiveItemBackground
+                  ? colors.bubbleReceived
                   : "transparent",
             },
           ]}
@@ -65,14 +103,14 @@ function CustomDrawerContent(props: any) {
             <FontAwesome5
               name="tachometer-alt"
               size={20}
-              color={currentRouteName === "tabs" || currentRouteName === "index" ? colors.primary : colors.icon}
+              color={currentRouteName === "tabs" || currentRouteName === "index" ? colors.accent : colors.textSecondary}
             />
           </View>
           <Text
             style={[
               styles.drawerItemText,
               {
-                color: currentRouteName === "tabs" || currentRouteName === "index" ? colors.primary : colors.text,
+                color: currentRouteName === "tabs" || currentRouteName === "index" ? colors.accent : colors.textPrimary,
                 fontWeight: currentRouteName === "tabs" || currentRouteName === "index" ? "600" : "500",
               },
             ]}
@@ -83,7 +121,7 @@ function CustomDrawerContent(props: any) {
             <View
               style={[
                 styles.activeIndicator,
-                { backgroundColor: colors.primary },
+                { backgroundColor: colors.accent },
               ]}
             />
           )}
@@ -95,7 +133,7 @@ function CustomDrawerContent(props: any) {
             {
               backgroundColor:
                 currentRouteName === "groups"
-                  ? colors.drawerActiveItemBackground
+                  ? colors.bubbleReceived
                   : "transparent",
             },
           ]}
@@ -105,14 +143,14 @@ function CustomDrawerContent(props: any) {
             <FontAwesome5
               name="users"
               size={20}
-              color={currentRouteName === "groups" ? colors.primary : colors.icon}
+              color={currentRouteName === "groups" ? colors.accent : colors.textSecondary}
             />
           </View>
           <Text
             style={[
               styles.drawerItemText,
               {
-                color: currentRouteName === "groups" ? colors.primary : colors.text,
+                color: currentRouteName === "groups" ? colors.accent : colors.textPrimary,
                 fontWeight: currentRouteName === "groups" ? "600" : "500",
               },
             ]}
@@ -123,7 +161,7 @@ function CustomDrawerContent(props: any) {
             <View
               style={[
                 styles.activeIndicator,
-                { backgroundColor: colors.primary },
+                { backgroundColor: colors.accent },
               ]}
             />
           )}
@@ -135,7 +173,7 @@ function CustomDrawerContent(props: any) {
             {
               backgroundColor:
                 currentRouteName === "activity"
-                  ? colors.drawerActiveItemBackground
+                  ? colors.bubbleReceived
                   : "transparent",
             },
           ]}
@@ -145,14 +183,14 @@ function CustomDrawerContent(props: any) {
             <FontAwesome5
               name="history"
               size={20}
-              color={currentRouteName === "activity" ? colors.primary : colors.icon}
+              color={currentRouteName === "activity" ? colors.accent : colors.textSecondary}
             />
           </View>
           <Text
             style={[
               styles.drawerItemText,
               {
-                color: currentRouteName === "activity" ? colors.primary : colors.text,
+                color: currentRouteName === "activity" ? colors.accent : colors.textPrimary,
                 fontWeight: currentRouteName === "activity" ? "600" : "500",
               },
             ]}
@@ -163,7 +201,7 @@ function CustomDrawerContent(props: any) {
             <View
               style={[
                 styles.activeIndicator,
-                { backgroundColor: colors.primary },
+                { backgroundColor: colors.accent },
               ]}
             />
           )}
@@ -175,7 +213,7 @@ function CustomDrawerContent(props: any) {
             {
               backgroundColor:
                 currentRouteName === "settings"
-                  ? colors.drawerActiveItemBackground
+                  ? colors.bubbleReceived
                   : "transparent",
             },
           ]}
@@ -185,14 +223,14 @@ function CustomDrawerContent(props: any) {
             <FontAwesome5
               name="cog"
               size={20}
-              color={currentRouteName === "settings" ? colors.primary : colors.icon}
+              color={currentRouteName === "settings" ? colors.accent : colors.textSecondary}
             />
           </View>
           <Text
             style={[
               styles.drawerItemText,
               {
-                color: currentRouteName === "settings" ? colors.primary : colors.text,
+                color: currentRouteName === "settings" ? colors.accent : colors.textPrimary,
                 fontWeight: currentRouteName === "settings" ? "600" : "500",
               },
             ]}
@@ -203,13 +241,13 @@ function CustomDrawerContent(props: any) {
             <View
               style={[
                 styles.activeIndicator,
-                { backgroundColor: colors.primary },
+                { backgroundColor: colors.accent },
               ]}
             />
           )}
         </TouchableOpacity>
         
-        <View style={[styles.divider, { backgroundColor: colors.divider }]} />
+        <View style={[styles.divider, { backgroundColor: colors.textSecondary + '20' }]} />
         
         <TouchableOpacity
           style={[
@@ -220,14 +258,14 @@ function CustomDrawerContent(props: any) {
             <FontAwesome5
               name="question-circle"
               size={18}
-              color={colors.icon}
+              color={colors.textSecondary}
             />
           </View>
           <Text
             style={[
               styles.drawerItemText,
               {
-                color: colors.text,
+                color: colors.textPrimary,
               },
             ]}
           >
@@ -240,22 +278,22 @@ function CustomDrawerContent(props: any) {
       <TouchableOpacity 
         style={[
           styles.signOutButton,
-          { backgroundColor: colors.drawerActiveItemBackground }
+          { backgroundColor: colors.bubbleReceived }
         ]}
         onPress={() => {
           props.navigation.closeDrawer();
           setTimeout(() => {
-            logout();
+            signOut();
           }, 300);
         }}
       >
         <FontAwesome5
           name="sign-out-alt"
           size={18}
-          color={colors.error}
+          color="#FF3B30"
           style={styles.signOutIcon}
         />
-        <Text style={[styles.signOutText, { color: colors.error }]}>
+        <Text style={[styles.signOutText, { color: "#FF3B30" }]}>
           Sign Out
         </Text>
       </TouchableOpacity>
@@ -265,133 +303,143 @@ function CustomDrawerContent(props: any) {
 
 // Custom Drawer Toggle Button with circular background
 function CustomDrawerToggle(props: any) {
-  const { colors } = useTheme();
+  const { colors } = useSettings();
 
   return (
     <View
       style={[
         styles.toggleButtonContainer,
-        { backgroundColor: colors.headerBackground },
+        { backgroundColor: colors.background },
       ]}
     >
-      <DrawerToggleButton {...props} tintColor={colors.text} />
+      <DrawerToggleButton {...props} tintColor={colors.textPrimary} />
     </View>
   );
 }
 
-// Wrap the root component with ThemeProvider
-function RootLayoutWithTheme({ initialRoute }: { initialRoute: string }) {
-  const { colors } = useTheme();
-  const { isAuthenticated, isLoading: authLoading } = useAuth();
+// Main app component that handles authentication state
+function AppContent({ initialRoute }: { initialRoute: string }) {
+  const { user, isLoading } = useAuth();
+  const { isDarkMode, colors } = useSettings();
   
   // Set initial route when component mounts
   useEffect(() => {
     // Don't redirect if auth is still loading
-    if (authLoading) return;
+    if (isLoading) return;
     
     if (initialRoute === '/onboarding') {
       router.replace('/onboarding' as any);
-    } else if (!isAuthenticated) {
-      // Only redirect to login if not authenticated
-      router.replace('/login' as any);
-    } else if (isAuthenticated && initialRoute === '/') {
+    } else if (!user) {
+      // Only redirect to auth if not authenticated
+      // The AuthNavigator will be rendered instead
+    } else if (user && initialRoute === '/') {
       // If authenticated and initial route is root, go to tabs
       router.replace('/tabs' as any);
     }
-  }, [initialRoute, isAuthenticated, authLoading]);
+  }, [initialRoute, user, isLoading]);
 
+  // Show loading while checking auth
+  if (isLoading) {
+    return null;
+  }
+
+  // Show auth navigator if not authenticated
+  if (!user) {
+    return (
+      <>
+        <StatusBar style={isDarkMode ? "light" : "dark"} backgroundColor="transparent" translucent={true} />
+        <AuthNavigator />
+      </>
+    );
+  }
+
+  // Show main app if authenticated
   return (
-    <Drawer
-      drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={({ route }) => ({
-        headerShown: true,
-        headerTitle: route.name !== 'index' && route.name !== 'tabs' ? route.name.charAt(0).toUpperCase() + route.name.slice(1) : "",
-        headerTitleAlign: 'center',
-        headerTitleStyle: {
-          fontWeight: '600',
-          fontSize: 18,
-          color: colors.text,
-        },
-        headerStyle: {
-          backgroundColor: colors.headerBackground,
-          elevation: 0, // Remove shadow on Android
-          shadowOpacity: 0, // Remove shadow on iOS
-          borderBottomWidth: 0,
-          height: Platform.OS === 'ios' ? 80 : 60,
-        },
-        headerShadowVisible: false,
-        drawerType: "slide",
-        drawerStyle: {
-          width: "75%",
-          backgroundColor: colors.drawerBackground,
-        },
-        swipeEdgeWidth: 50,
-        headerLeft: (props) => <CustomDrawerToggle {...props} />,
-      })}
-    >
-      <Drawer.Screen
-        name="index"
-        options={{
-          drawerLabel: "Home",
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="tabs"
-        options={{
-          drawerLabel: "Dashboard",
-          headerShown: false,
-        }}
-      />
-      <Drawer.Screen
-        name="groups"
-        options={{
-          drawerLabel: "Groups",
-          drawerIcon: ({ color }) => (
-            <FontAwesome5 name="users" size={20} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="activity"
-        options={{
-          drawerLabel: "Activity",
-          drawerIcon: ({ color }) => (
-            <FontAwesome5 name="history" size={20} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="settings"
-        options={{
-          drawerLabel: "Settings",
-          drawerIcon: ({ color }) => (
-            <FontAwesome5 name="cog" size={20} color={color} />
-          ),
-        }}
-      />
-      <Drawer.Screen
-        name="onboarding"
-        options={{
-          drawerLabel: "Onboarding",
-          drawerItemStyle: { display: 'none' },  // Hide from drawer
-          headerShown: false,  // Hide header on onboarding screen
-        }}
-      />
-      
-      <Drawer.Screen
-        name="login"
-        options={{
-          drawerLabel: "Login",
-          drawerItemStyle: { display: 'none' },  // Hide from drawer
-          headerShown: false,  // Hide header on login screen
-        }}
-      />
-    </Drawer>
+    <>
+      <StatusBar style={isDarkMode ? "light" : "dark"} backgroundColor="transparent" translucent={true} />
+      <Drawer
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
+        screenOptions={({ route }) => ({
+          headerShown: true,
+          headerTitle: route.name !== 'index' && route.name !== 'tabs' ? route.name.charAt(0).toUpperCase() + route.name.slice(1) : "",
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontWeight: '600',
+            fontSize: 18,
+            color: colors.textPrimary,
+          },
+          headerStyle: {
+            backgroundColor: colors.background,
+            elevation: 0, // Remove shadow on Android
+            shadowOpacity: 0, // Remove shadow on iOS
+            borderBottomWidth: 0,
+            height: Platform.OS === 'ios' ? 80 : 60,
+          },
+          headerShadowVisible: false,
+          drawerType: "slide",
+          drawerStyle: {
+            width: "75%",
+            backgroundColor: colors.background,
+          },
+          swipeEdgeWidth: 50,
+          headerLeft: (props) => <CustomDrawerToggle {...props} />,
+        })}
+      >
+        <Drawer.Screen
+          name="index"
+          options={{
+            drawerLabel: "Home",
+            headerShown: false,
+          }}
+        />
+        <Drawer.Screen
+          name="tabs"
+          options={{
+            drawerLabel: "Dashboard",
+            headerShown: false,
+          }}
+        />
+        <Drawer.Screen
+          name="groups"
+          options={{
+            drawerLabel: "Groups",
+            drawerIcon: ({ color }) => (
+              <FontAwesome5 name="users" size={20} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="activity"
+          options={{
+            drawerLabel: "Activity",
+            drawerIcon: ({ color }) => (
+              <FontAwesome5 name="history" size={20} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="settings"
+          options={{
+            drawerLabel: "Settings",
+            drawerIcon: ({ color }) => (
+              <FontAwesome5 name="cog" size={20} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
+          name="onboarding"
+          options={{
+            drawerLabel: "Onboarding",
+            drawerItemStyle: { display: 'none' },  // Hide from drawer
+            headerShown: false,  // Hide header on onboarding screen
+          }}
+        />
+      </Drawer>
+    </>
   );
 }
 
-// Export the root layout wrapped with ThemeProvider
+// Export the root layout wrapped with providers
 export default function RootLayout() {
   const [isOnboardingComplete, setIsOnboardingComplete] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -428,11 +476,13 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <BottomSheetProvider>
-          <RootLayoutWithTheme initialRoute={initialRoute} />
-        </BottomSheetProvider>
-      </AuthProvider>
+      <SettingsProvider>
+        <AuthProvider>
+          <BottomSheetProvider>
+            <AppContent initialRoute={initialRoute} />
+          </BottomSheetProvider>
+        </AuthProvider>
+      </SettingsProvider>
     </ThemeProvider>
   );
 }

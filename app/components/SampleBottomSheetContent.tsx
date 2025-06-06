@@ -1,7 +1,7 @@
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import React, { useCallback, useMemo } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { useTheme } from "../theme/ThemeContext";
+import { useTheme } from "../../context/ThemeContext";
 
 const styles = StyleSheet.create({
   contentContainer: {

@@ -1,15 +1,15 @@
 import { FontAwesome5 } from '@expo/vector-icons';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useTheme } from '../theme/ThemeContext';
-import { useAuth } from '../utils/authContext';
+import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function DashboardTabScreen() {
   const { colors } = useTheme();
-  const { logout } = useAuth();
+  const { signOut } = useAuth();
 
   const handleLogout = () => {
-    logout();
+    signOut();
   };
 
   return (
